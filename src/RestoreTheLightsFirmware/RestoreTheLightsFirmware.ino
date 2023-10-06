@@ -1,24 +1,24 @@
-#define pot A0      //Pin of potentiometer
-#define LS 13       //Pin of status LED, must be PWM pin
-#define COLUMNS 4   //The number of pairs led-button
+#include <avr/sleep.h>
+#include <avr/power.h>
+#include "config.h"
+#include "interruptAll.h"
 
-const unsigned short pinL[COLUMNS] = {6,7,8,9} ;
-const unsigned short pinB[COLUMNS] = {2,3,4,5} ;
 
 void waitStart();
 
-void game();
+void game(float T2, float T3);
 
 void deepSleep();
 
 void setup(){
+    //Setup pins
     pinMode(pot,INPUT);
     pinMode(LS, OUTPUT);
     for(int i=0; i<COLUMNS; i++){
         pinMode(pinL[i],OUTPUT);
         pinMode(pinB[i],INPUT_PULLUP);
     }
-    waitStart();
+    waitStart(); //Entry point, the first state
 }
 
 void loop() {
@@ -26,7 +26,7 @@ void loop() {
 }
 
 void waitStart() {
-    
+
 }
 
  void game() {
@@ -34,5 +34,14 @@ void waitStart() {
  }
 
  void deepSleep() {
-    
+    allButtonsAttachIntterrupt(wakeFromSleep);
+    set_sleep_mode(SLEEP_MODE_PWR_DOWN); 
+    sleep_enable();
+    sleep_mode(); 
+ }
+
+void wakeFromSleep(){
+    sleep_disable(); 
+    allButtonsDetatchIntterrupt();
+    waitStart();
  }

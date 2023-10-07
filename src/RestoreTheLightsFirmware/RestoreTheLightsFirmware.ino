@@ -3,7 +3,6 @@
 #include "config.h"
 #include "interruptAll.h"
 
-
 void waitStart();
 
 void game(float T2, float T3);
@@ -18,6 +17,7 @@ void setup(){
         pinMode(pinL[i],OUTPUT);
         pinMode(pinB[i],INPUT_PULLUP);
     }
+    Serial.begin(9600);
     waitStart(); //Entry point, the first state
 }
 
@@ -26,7 +26,17 @@ void loop() {
 }
 
 void waitStart() {
-
+    entred_state_time = millis();
+    current_time_in_state = millis();
+    enableInterrupt(pinB[1],startGame,CHANGE);
+    Serial.println("Welcome to the Restore the light Game. Press key B1 to Start");
+    while (current_time_in_state < 10000) {
+        analogWrite(LS,brightness);
+        brightness += fadeAmount;
+        if (brightness == 0 || brightness == 255) fadeAmount = -fadeAmount;
+        current_time_in_state = millis() - entred_state_time;
+  }
+  deepSleep();
 }
 
  void game() {
@@ -45,3 +55,8 @@ void wakeFromSleep(){
     allButtonsDetatchIntterrupt();
     waitStart();
  }
+
+ void startGame(){
+  disableInterrupt(pinB[1]);
+  game();
+}

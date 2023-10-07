@@ -1,7 +1,6 @@
 #include <avr/sleep.h>
-#include <avr/power.h>
 #include "config.h"
-#include "interruptAll.h"
+#include <EnableInterrupt.h>
 
 void waitStart();
 
@@ -44,15 +43,10 @@ void waitStart() {
  }
 
  void deepSleep() {
-    allButtonsAttachIntterrupt(wakeFromSleep);
     set_sleep_mode(SLEEP_MODE_PWR_DOWN); 
     sleep_enable();
-    sleep_mode(); 
- }
-
-void wakeFromSleep(){
+    sleep_mode();
     sleep_disable(); 
-    allButtonsDetatchIntterrupt();
     waitStart();
  }
 

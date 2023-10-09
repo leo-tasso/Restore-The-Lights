@@ -1,11 +1,12 @@
-#include <avr/sleep.h>
-#include <EnableInterrupt.h>
 #include <stdlib.h>
+#include "config.h"
 #include "utilities.h"
 
+extern game_state activeGameState;
+
 void setup(){
+    srand(millis()%100); //seed of rand function
     //Setup pins
-    srand(millis()%100);
     pinMode(pot,INPUT);
     pinMode(LS, OUTPUT);
     for(int i=0; i<COLUMNS; i++){
@@ -13,13 +14,12 @@ void setup(){
         pinMode(pinB[i],INPUT_PULLUP);
     }
     Serial.begin(9600);
-    waitStart(); //Entry point, the first state
+    changeGameMode(WAIT_START); //Entry point, the first state
 }
 
 void loop() {
     
-    switch (game_state)
-    {
+    switch (activeGameState){
     case WAIT_START:
         waitStart();
         break;
@@ -39,4 +39,5 @@ void loop() {
         deepSleep();
         break;
     
+    }
 }

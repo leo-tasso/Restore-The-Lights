@@ -1,7 +1,7 @@
 #ifndef UTILITIES
 #define UTILITIES
 
-extern int game_state;
+#include "config.h"
 
 void waitStart();
 
@@ -12,5 +12,10 @@ void deepSleep();
 void displaySequence();
 
 void userGameplay();
+
+void changeGameMode(game_state state);
+
+
+void generateSequence();
 
 #endif

@@ -12,7 +12,6 @@ void setup(){
         pinMode(pinL[i],OUTPUT);
         pinMode(pinB[i],INPUT_PULLUP);
     }
-    //TODO Attach interrupts to buttons
     Serial.begin(9600);
     initializeInterrupts();
     changeGameMode(WAIT_START); //Entry point, the first state

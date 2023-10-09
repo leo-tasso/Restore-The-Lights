@@ -4,6 +4,7 @@
 #include <arduino.h>
 #include "utilities.h"
 #include <EnableInterrupt.h>
+#include "led.h"
 
 short int brightness = 0;
 short int fadeAmount = 5;
@@ -11,7 +12,6 @@ unsigned long entred_state_time;
 unsigned long T1 = 0;
 unsigned long T2 = 0;
 unsigned long T3 = 0;
-int ledsOn = BUTTON_NUM;  //TODO will be swapped with getActiveLedNum()
 byte pressedButtons = 0;
 game_state activeGameState = WAIT_START;
 int sequence[BUTTON_NUM] = { 1, 2, 4, 8 };
@@ -49,7 +49,7 @@ void initializeInterrupts() {
 
 
 
-void waitStart() {
+void waitStart() {//TODO include potentiomenter and use pressed buttons instead of interrupts
   entred_state_time = millis();
   //enableInterrupt(pinB[1],startGame,CHANGE);
   Serial.println("Welcome to the Restore the light Game. Press key B1 to Start");
@@ -59,9 +59,6 @@ void waitStart() {
     if (brightness == 0 || brightness == 255) fadeAmount = -fadeAmount;
   }
   deepSleep();
-}
-
-void game() {
 }
 
 void deepSleep() {
@@ -77,8 +74,7 @@ void waitTime() {
   if (T1 == 0) {
     T1 = rand() % MAX_WAIT_TIME;
     generateSequence();
-    //TODO turn on all leds
-    ledsOn = BUTTON_NUM;
+    turnOnAllLeds();
   }
   if (millis() - entred_state_time >= T1) {
     T1 = 0;
@@ -87,20 +83,18 @@ void waitTime() {
 }
 
 void displaySequence() {
-  if (ledsOn == 0) {
+  if (getActiveLedNum() == 0) {
     changeGameMode(USER_GAMEPLAY);
-  } else if (entred_state_time - millis() < T2 / ledsOn) {
-    //TODO turn off first led
-    ledsOn--;
+  } else if (entred_state_time - millis() < T2 / getActiveLedNum()) {
+    turnOffLed(sequence[getActiveLedNum() -1]);
   }
 }
 
 void userGameplay() {
-  if (entred_state_time - millis() > T3 || (pressedButtons != sequence[ledsOn] && pressedButtons != 0)) {
+  if (entred_state_time - millis() > T3 || (pressedButtons != sequence[getActiveLedNum()] && pressedButtons != 0)) {
     //TODO gameOver();
-  } else if (ledsOn < BUTTON_NUM) {
-    //TODO turn on first led sequence
-    ledsOn++;
+  } else if (getActiveLedNum() < BUTTON_NUM) {
+    turnOnLed(sequence[getActiveLedNum()]);
   } else {
     //TODO win
     changeGameMode(WAIT_START);

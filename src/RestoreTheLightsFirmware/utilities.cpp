@@ -11,10 +11,10 @@ unsigned long entred_state_time;
 unsigned long T1 = 0;
 unsigned long T2 = 0;
 unsigned long T3 = 0;
-int ledsOn =COLUMNS;
+int ledsOn =BUTTON_NUM; //TODO will be swapped with getActiveLedNum()
 int pressedButtons = 0;
 game_state activeGameState = WAIT_START;
-int sequence[COLUMNS] = {1,2,4,8};
+int sequence[BUTTON_NUM] = {1,2,4,8};
 
 
 
@@ -48,7 +48,7 @@ void waitTime(){
         T1=rand()% MAX_WAIT_TIME;
         generateSequence();
         //TODO turn on all leds
-        ledsOn=COLUMNS;
+        ledsOn=BUTTON_NUM;
     }
     if(millis()-entred_state_time>=T1){
         T1=0;
@@ -69,7 +69,7 @@ void displaySequence(){
 void userGameplay(){
     if(entred_state_time-millis()>T3 || (pressedButtons!=sequence[ledsOn]&&pressedButtons!=0)){
         //TODO gameOver();
-    }else if(ledsOn<COLUMNS){
+    }else if(ledsOn<BUTTON_NUM){
         //TODO turn on first led sequence
         ledsOn++;
     }else{
@@ -78,13 +78,18 @@ void userGameplay(){
     }
 }
 
+game_state getActiveGameMode(){
+    return activeGameState;
+}
+
+
 void changeGameMode(game_state state){
     activeGameState = state;
     entred_state_time = millis();
 }
 
 void generateSequence(){
-    for (int i = COLUMNS - 1; i > 0; i--) {
+    for (int i = BUTTON_NUM - 1; i > 0; i--) {
         int j = random(0, i + 1);
         int temp = sequence[i];
         sequence[i] = sequence[j];

@@ -12,6 +12,8 @@ unsigned long entred_state_time;
 unsigned long T1 = 0;
 unsigned long T2 = 0;
 unsigned long T3 = 0;
+double F = 1; //factor influencing T1 T2 T3
+unsigned short L = 0; //difficulty level
 byte pressedButtons = 0;
 game_state activeGameState = WAIT_START;
 int sequence[BUTTON_NUM] = { 1, 2, 4, 8 };
@@ -35,9 +37,6 @@ void updateButtons() {
   }
 }
 
-
-
-
 void initializeInterrupts() {
   for (int i = 0; i < BUTTON_NUM; i++) {
     timePressed[i] = 0;
@@ -49,16 +48,22 @@ void initializeInterrupts() {
 
 
 
-void waitStart() {//TODO include potentiomenter and use pressed buttons instead of interrupts
-  entred_state_time = millis();
-  //enableInterrupt(pinB[1],startGame,CHANGE);
+void waitStart() {
   Serial.println("Welcome to the Restore the light Game. Press key B1 to Start");
+  L = map(analogRead(pot),0,1023,1,4);
+  F = map(L,1,4,1.0,2.5);
+  if( digitalRead(pinB[1]) == HIGH) {
+    T1 = (rand() % MAX_WAIT_TIME)*F;
+    T2 = T2*F; //TODO
+    T3 = T3*F; //TODO
+    changeGameMode(waitTime);
+  }
   while (millis() - entred_state_time < 10000) {
     analogWrite(LS, brightness);
     brightness += fadeAmount;
     if (brightness == 0 || brightness == 255) fadeAmount = -fadeAmount;
   }
-  deepSleep();
+  changeGameMode(SLEEP);
 }
 
 void deepSleep() {
@@ -66,7 +71,7 @@ void deepSleep() {
   sleep_enable();
   sleep_mode();
   sleep_disable();
-  waitStart();
+  changeGameMode(WAIT_START);
 }
 
 

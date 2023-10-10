@@ -25,6 +25,7 @@ void loop() {
         break;
 
     case WAIT_START_TIME:
+        waitTime();
         break;
 
     case DISPLAY_SEQUENCE:

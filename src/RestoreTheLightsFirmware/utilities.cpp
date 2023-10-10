@@ -91,6 +91,7 @@ void displaySequence() {
 }
 
 void userGameplay() {
+  noInterrupts();
   if (entred_state_time - millis() > T3 || (pressedButtons != sequence[getActiveLedNum()] && pressedButtons != 0)) {
     //TODO gameOver();
   } else if (getActiveLedNum() < BUTTON_NUM) {
@@ -99,6 +100,7 @@ void userGameplay() {
     //TODO win
     changeGameMode(WAIT_START);
   }
+  interrupts();
 }
 
 game_state getActiveGameMode() {

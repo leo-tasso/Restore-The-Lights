@@ -19,4 +19,5 @@ void changeGameMode(game_state state);
 
 void initializeInterrupts();
 
+void log(String s);
 #endif

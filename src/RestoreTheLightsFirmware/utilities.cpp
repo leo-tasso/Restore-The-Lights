@@ -121,3 +121,9 @@ void userGameplay() {
 game_state getActiveGameMode() {
   return activeGameState;
 }
+
+void log(String s){
+ #ifdef DEBUG
+ Serial.println(s);
+ #endif 
+}

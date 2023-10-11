@@ -10,8 +10,8 @@ unsigned long entred_state_time;
 unsigned long T1 = 0;
 unsigned long T2 = T1_TIME_DEFAULT;
 unsigned long T3 = T2_TIME_DEFAULT;
-double F = 1; //factor influencing T2 T3
-unsigned short L = 0; //difficulty level
+double F = 1;          //factor influencing T2 T3
+unsigned short L = 0;  //difficulty level
 volatile byte pressedButtons = 0;
 game_state activeGameState = START_READY;
 int sequence[BUTTON_NUM] = { 1, 2, 4, 8 };
@@ -24,12 +24,10 @@ void updateButtons() {
     if (time - timePressed[i] > BOUNCING_TIME) {
       timePressed[i] = time;
       int status = digitalRead(pinB[i]);
-      if (status == HIGH) {
-        if (!(pressedButtons & (0b1 << i))) {
-            pressedButtons |= (0b1 << i);
-        } else {
-          pressedButtons &= ~(1 << i);
-        }
+      if (status ^ INVERTED == HIGH) {
+        pressedButtons |= (0b1 << i);
+      } else {
+        pressedButtons &= ~(0b1 << i);
       }
     }
   }
@@ -60,15 +58,15 @@ void changeGameMode(game_state state) {
 
 void StartReady() {
   Serial.println("Welcome to the Restore the light Game. Press key B1 to Start");
-  L = map(analogRead(pot),0,1023,1,4);
-  F = map(L,1,4,1.2,2.2);
+  L = map(analogRead(pot), 0, 1023, 1, 4);
+  F = map(L, 1, 4, 1.2, 2.2);
   if (millis() - entred_state_time < 10000) {
     breathLed(LS);
   } else {
     changeGameMode(SLEEP);
   }
   noInterrupts();
-  if( pressedButtons == 1 ) {
+  if (pressedButtons == 1) {
     changeGameMode(WAIT_START_TIME);
   }
   interrupts();
@@ -84,15 +82,15 @@ void deepSleep() {
 
 void waitStartTime() {
   if (T1 == 0) {
-    T1 = rand() % (MAX_WAIT_TIME - MIN_WAIT_TIME + 1) + MIN_WAIT_TIME;
+    T1 = random(MIN_WAIT_TIME, MAX_WAIT_TIME);
     generateSequence();
     turnOnAllLeds();
   }
   if (millis() - entred_state_time >= T1) {
     T1 = 0;
     changeGameMode(DISPLAY_SEQUENCE);
-    T2 = T2/F;
-    T3 = T3/F;
+    T2 = T2 / F;
+    T3 = T3 / F;
   }
 }
 
@@ -100,7 +98,7 @@ void displaySequence() {
   if (getActiveLedNum() == 0) {
     changeGameMode(USER_GAMEPLAY);
   } else if (entred_state_time - millis() < T2 / getActiveLedNum()) {
-    turnOffLed(sequence[getActiveLedNum() -1]);
+    turnOffLed(sequence[getActiveLedNum() - 1]);
   }
 }
 
@@ -108,14 +106,14 @@ void userGameplay() {
   noInterrupts();
   if (entred_state_time - millis() > T3 || (pressedButtons != sequence[getActiveLedNum()] && pressedButtons != 0)) {
     //TODO gameOver();
-    Serial.println("Gamer Over"); //print also the score
+    Serial.println("Gamer Over");  //print also the score
     changeGameMode(START_READY);
   } else if (getActiveLedNum() < BUTTON_NUM) {
     turnOnLed(sequence[getActiveLedNum()]);
   } else {
     //TODO win
-    Serial.println("WIN"); 
-    changeGameMode(WAIT_START_TIME); //increase the score
+    Serial.println("WIN");
+    changeGameMode(WAIT_START_TIME);  //increase the score
   }
   interrupts();
 }

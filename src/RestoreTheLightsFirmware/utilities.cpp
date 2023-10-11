@@ -52,15 +52,15 @@ void generateSequence() {
 void changeGameMode(game_state state) {
   activeGameState = state;
   entred_state_time = millis();
+  if(state == START_READY)  Serial.println("Welcome to the Restore the light Game. Press key B1 to Start");
 }
 
 
 
 void StartReady() {
-  Serial.println("Welcome to the Restore the light Game. Press key B1 to Start");
-  L = map(analogRead(pot), 0, 1023, 1, 4);
-  F = map(L, 1, 4, 1.2, 2.2);
   if (millis() - entred_state_time < 10000) {
+    L = map(analogRead(pot), 0, 1023, 1, 4);
+    F = map(L, 1, 4, 1.2, 2.2);
     breathLed(LS);
   } else {
     changeGameMode(SLEEP);

@@ -39,6 +39,5 @@ void loop() {
     case SLEEP:
         deepSleep();
         break;
-    
     }
 }

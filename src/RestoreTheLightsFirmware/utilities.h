@@ -17,9 +17,6 @@ game_state getActiveGameMode();
 
 void changeGameMode(game_state state);
 
-
-void generateSequence();
-
 void initializeInterrupts();
 
 #endif

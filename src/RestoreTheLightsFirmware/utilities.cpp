@@ -42,7 +42,19 @@ void initializeInterrupts() {
   }
 }
 
+void generateSequence() {
+  for (int i = BUTTON_NUM - 1; i > 0; i--) {
+    int j = random(0, i + 1);
+    int temp = sequence[i];
+    sequence[i] = sequence[j];
+    sequence[j] = temp;
+  }
+}
 
+void changeGameMode(game_state state) {
+  activeGameState = state;
+  entred_state_time = millis();
+}
 
 
 
@@ -57,8 +69,6 @@ void StartReady() {
   }
   noInterrupts();
   if( pressedButtons == 1 ) {
-    T2 = T2/F;
-    T3 = T3/F;
     changeGameMode(WAIT_START_TIME);
   }
   interrupts();
@@ -72,7 +82,6 @@ void deepSleep() {
   changeGameMode(START_READY);
 }
 
-
 void waitStartTime() {
   if (T1 == 0) {
     T1 = rand() % (MAX_WAIT_TIME - MIN_WAIT_TIME + 1) + MIN_WAIT_TIME;
@@ -82,6 +91,8 @@ void waitStartTime() {
   if (millis() - entred_state_time >= T1) {
     T1 = 0;
     changeGameMode(DISPLAY_SEQUENCE);
+    T2 = T2/F;
+    T3 = T3/F;
   }
 }
 
@@ -97,30 +108,18 @@ void userGameplay() {
   noInterrupts();
   if (entred_state_time - millis() > T3 || (pressedButtons != sequence[getActiveLedNum()] && pressedButtons != 0)) {
     //TODO gameOver();
+    Serial.println("Gamer Over"); //print also the score
+    changeGameMode(START_READY);
   } else if (getActiveLedNum() < BUTTON_NUM) {
     turnOnLed(sequence[getActiveLedNum()]);
   } else {
     //TODO win
-    changeGameMode(START_READY);
+    Serial.println("WIN"); 
+    changeGameMode(WAIT_START_TIME); //increase the score
   }
   interrupts();
 }
 
 game_state getActiveGameMode() {
   return activeGameState;
-}
-
-
-void changeGameMode(game_state state) {
-  activeGameState = state;
-  entred_state_time = millis();
-}
-
-void generateSequence() {
-  for (int i = BUTTON_NUM - 1; i > 0; i--) {
-    int j = random(0, i + 1);
-    int temp = sequence[i];
-    sequence[i] = sequence[j];
-    sequence[j] = temp;
-  }
 }

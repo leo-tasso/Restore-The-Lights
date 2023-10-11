@@ -5,7 +5,10 @@ short int getActiveLedNum();    //Returns the number of leds currently on
 
 void turnOnAllLeds();           //Turns on all leds
 
-void turnOffLed(int ledMask);   //Truns off led identified by mask 8 4 2 1 in relative order
+void turnOffLed(int ledMask);   //Truns off led identified by mask 1 2 4 8 in relative order
 
-void turnOnLed(int ledMask);    //Truns on led identified by mask 8 4 2 1 in relative order
+void turnOnLed(int ledMask);    //Truns on led identified by mask 1 2 4 8 in relative order
+
+void breathLed(int led);        //if called continuosly, make a led breath
+
 #endif

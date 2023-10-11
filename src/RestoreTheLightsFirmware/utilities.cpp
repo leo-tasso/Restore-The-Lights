@@ -1,21 +1,19 @@
-#include "config.h"
 #include <avr/sleep.h>
 #include <stdlib.h>
 #include <arduino.h>
-#include "utilities.h"
 #include <EnableInterrupt.h>
+#include "utilities.h"
+#include "config.h"
 #include "led.h"
 
-short int brightness = 0;
-short int fadeAmount = 5;
 unsigned long entred_state_time;
 unsigned long T1 = 0;
-unsigned long T2 = 0;
-unsigned long T3 = 0;
-double F = 1; //factor influencing T1 T2 T3
+unsigned long T2 = T1_TIME_DEFAULT;
+unsigned long T3 = T2_TIME_DEFAULT;
+double F = 1; //factor influencing T2 T3
 unsigned short L = 0; //difficulty level
-byte pressedButtons = 0;
-game_state activeGameState = WAIT_START;
+volatile byte pressedButtons = 0;
+game_state activeGameState = START_READY;
 int sequence[BUTTON_NUM] = { 1, 2, 4, 8 };
 unsigned long timePressed[BUTTON_NUM];
 
@@ -48,22 +46,22 @@ void initializeInterrupts() {
 
 
 
-void waitStart() {
+void StartReady() {
   Serial.println("Welcome to the Restore the light Game. Press key B1 to Start");
   L = map(analogRead(pot),0,1023,1,4);
-  F = map(L,1,4,1.0,2.5);
-  if( digitalRead(pinB[1]) == HIGH) {
-    T1 = (rand() % MAX_WAIT_TIME)*F;
-    T2 = T2*F; //TODO
-    T3 = T3*F; //TODO
-    changeGameMode(waitTime);
+  F = map(L,1,4,1.2,2.2);
+  if (millis() - entred_state_time < 10000) {
+    breathLed(LS);
+  } else {
+    changeGameMode(SLEEP);
   }
-  while (millis() - entred_state_time < 10000) {
-    analogWrite(LS, brightness);
-    brightness += fadeAmount;
-    if (brightness == 0 || brightness == 255) fadeAmount = -fadeAmount;
+  noInterrupts();
+  if( pressedButtons == 1 ) {
+    T2 = T2/F;
+    T3 = T3/F;
+    changeGameMode(WAIT_START_TIME);
   }
-  changeGameMode(SLEEP);
+  interrupts();
 }
 
 void deepSleep() {
@@ -71,13 +69,13 @@ void deepSleep() {
   sleep_enable();
   sleep_mode();
   sleep_disable();
-  changeGameMode(WAIT_START);
+  changeGameMode(START_READY);
 }
 
 
-void waitTime() {
+void waitStartTime() {
   if (T1 == 0) {
-    T1 = rand() % MAX_WAIT_TIME;
+    T1 = rand() % (MAX_WAIT_TIME - MIN_WAIT_TIME + 1) + MIN_WAIT_TIME;
     generateSequence();
     turnOnAllLeds();
   }
@@ -103,7 +101,7 @@ void userGameplay() {
     turnOnLed(sequence[getActiveLedNum()]);
   } else {
     //TODO win
-    changeGameMode(WAIT_START);
+    changeGameMode(START_READY);
   }
   interrupts();
 }

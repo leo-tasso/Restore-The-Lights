@@ -3,9 +3,9 @@
 
 #include "config.h"
 
-void waitStart();
+void StartReady();
 
-void game(float T2, float T3);
+void waitStartTime();
 
 void deepSleep();
 

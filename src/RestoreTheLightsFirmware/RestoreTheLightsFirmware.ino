@@ -14,18 +14,18 @@ void setup(){
     }
     Serial.begin(9600);
     initializeInterrupts();
-    changeGameMode(WAIT_START); //Entry point, the first state
+    changeGameMode(START_READY); //Entry point, the first state
 }
 
 void loop() {
     
     switch (getActiveGameMode()){
-    case WAIT_START:
-        waitStart();
+    case START_READY:
+        StartReady();
         break;
 
     case WAIT_START_TIME:
-        waitTime();
+        waitStartTime();
         break;
 
     case DISPLAY_SEQUENCE:

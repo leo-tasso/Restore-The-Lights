@@ -20,4 +20,6 @@ void changeGameMode(game_state state);
 void initializeInterrupts();
 
 void logger(String s);
+
+void updateButtons();
 #endif

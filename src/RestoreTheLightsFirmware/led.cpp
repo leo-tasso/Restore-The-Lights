@@ -58,3 +58,10 @@ void breathLed() {
   brightness += fadeAmount;
   if (brightness == 0 || brightness == 255) fadeAmount = -fadeAmount;
 }
+
+void turnOffAllLeds(){
+  //TODO
+}
+void turnOffBreather(){
+  //TODO
+}

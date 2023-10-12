@@ -9,6 +9,10 @@ void turnOffLed(int ledMask);   //Truns off led identified by mask 1 2 4 8 in re
 
 void turnOnLed(int ledMask);    //Truns on led identified by mask 1 2 4 8 in relative order
 
-void breathLed();        //if called continuosly, make a led breath
+void breathLed();               //If called continuosly, make a led breath
+
+void turnOffBreather();         //Switches off the breathing led
+
+void turnOffAllLeds();          //Turns off all the game leds
 
 #endif

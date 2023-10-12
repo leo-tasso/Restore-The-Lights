@@ -18,7 +18,7 @@ void setup() {
 }
 
 void loop() {
-
+  updateButtons(); //check also every cycle for button pressed in case of false positive
   switch (getActiveGameMode()) {
     case START_READY:
       StartReady();

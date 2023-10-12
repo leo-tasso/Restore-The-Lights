@@ -9,8 +9,8 @@
 #define MAX_WAIT_TIME 1000
 #define MIN_WAIT_TIME 1
 #define T2_TIME_DEFAULT 1500
-#define T3_TIME_DEFAULT 2500
-#define BOUNCING_TIME 0  //ms
+#define T3_TIME_DEFAULT 5000
+#define BOUNCING_TIME 30 //ms
 #define INVERTED 1
 enum game_state { START_READY,
                   WAIT_START_TIME,

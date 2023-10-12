@@ -9,6 +9,6 @@ void turnOffLed(int ledMask);   //Truns off led identified by mask 1 2 4 8 in re
 
 void turnOnLed(int ledMask);    //Truns on led identified by mask 1 2 4 8 in relative order
 
-void breathLed(int led);        //if called continuosly, make a led breath
+void breathLed();        //if called continuosly, make a led breath
 
 #endif

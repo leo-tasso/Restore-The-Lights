@@ -127,7 +127,7 @@ void displaySequence() {
     logger((String)T2);
     logger((String)(getActiveLedNum()));
     changeGameMode(USER_GAMEPLAY);
-  } else if (millis() - entred_state_time > T2 / getActiveLedNum()) {
+  } else if (millis() - entred_state_time > T2 / BUTTON_NUM) {
     turnOffLed(sequence[getActiveLedNum() - 1]);
     entred_state_time = millis();  //Update entered state time
   }

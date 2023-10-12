@@ -1,3 +1,4 @@
+#include "WString.h"
 #include <avr/sleep.h>
 #include <stdlib.h>
 #include <arduino.h>
@@ -8,14 +9,15 @@
 
 unsigned long entred_state_time;
 unsigned long T1 = 0;
-unsigned long T2 = T1_TIME_DEFAULT;
-unsigned long T3 = T2_TIME_DEFAULT;
+unsigned long T2 = T2_TIME_DEFAULT;
+unsigned long T3 = T3_TIME_DEFAULT;
 double F = 1;          //factor influencing T2 T3
 unsigned short L = 0;  //difficulty level
 volatile byte pressedButtons = 0;
 game_state activeGameState = START_READY;
 int sequence[BUTTON_NUM] = { 1, 2, 4, 8 };
 unsigned long timePressed[BUTTON_NUM];
+bool inputEnabled = 1;
 
 // To update the pressed mask every time any button is pressed or released, might split for each button
 void updateButtons() {
@@ -24,19 +26,22 @@ void updateButtons() {
     if (time - timePressed[i] > BOUNCING_TIME) {
       timePressed[i] = time;
       int status = digitalRead(pinB[i]);
-      if (status ^ INVERTED == HIGH) {
+      if ((status ^ INVERTED) == HIGH) {
+        logger("Pressed");
         pressedButtons |= (0b1 << i);
       } else {
         pressedButtons &= ~(0b1 << i);
       }
     }
   }
+  logger((String)pressedButtons);
 }
 
 void initializeInterrupts() {
+  logger("Inizialized Interrupts");
   for (int i = 0; i < BUTTON_NUM; i++) {
     timePressed[i] = 0;
-    enableInterrupt(digitalPinToInterrupt(pinL[i]), updateButtons, CHANGE);
+    enableInterrupt(pinB[i], updateButtons, CHANGE);
   }
 }
 
@@ -52,7 +57,29 @@ void generateSequence() {
 void changeGameMode(game_state state) {
   activeGameState = state;
   entred_state_time = millis();
-  if(state == START_READY)  Serial.println("Welcome to the Restore the light Game. Press key B1 to Start");
+  switch (state) {
+    case START_READY:
+      logger("State Ready");
+      break;
+
+    case WAIT_START_TIME:
+      logger("Wait Start Time");
+      break;
+
+    case DISPLAY_SEQUENCE:
+      logger("Display Sequence");
+      break;
+
+    case USER_GAMEPLAY:
+      logger("User Gameplay");
+      logger((String)sequence[0] + (String)sequence[1] + (String)sequence[2] + (String)sequence[3]);
+      break;
+
+    case SLEEP:
+      logger("Deep Sleep");
+      break;
+  }
+  if (state == START_READY) Serial.println("Welcome to the Restore the light Game. Press key B1 to Start");
 }
 
 
@@ -61,7 +88,7 @@ void StartReady() {
   if (millis() - entred_state_time < 10000) {
     L = map(analogRead(pot), 0, 1023, 1, 4);
     F = map(L, 1, 4, 1.2, 2.2);
-    breathLed(LS);
+    breathLed();
   } else {
     changeGameMode(SLEEP);
   }
@@ -73,6 +100,7 @@ void StartReady() {
 }
 
 void deepSleep() {
+  logger("Entering Deep Sleep");
   set_sleep_mode(SLEEP_MODE_PWR_DOWN);
   sleep_enable();
   sleep_mode();
@@ -96,25 +124,35 @@ void waitStartTime() {
 
 void displaySequence() {
   if (getActiveLedNum() == 0) {
+    logger((String)T2);
+    logger((String)(getActiveLedNum()));
     changeGameMode(USER_GAMEPLAY);
-  } else if (entred_state_time - millis() < T2 / getActiveLedNum()) {
+  } else if (millis() - entred_state_time > T2 / getActiveLedNum()) {
     turnOffLed(sequence[getActiveLedNum() - 1]);
+    entred_state_time = millis();  //Update entered state time
   }
 }
 
 void userGameplay() {
   noInterrupts();
-  if (entred_state_time - millis() > T3 || (pressedButtons != sequence[getActiveLedNum()] && pressedButtons != 0)) {
-    //TODO gameOver();
-    Serial.println("Gamer Over");  //print also the score
-    changeGameMode(START_READY);
-  } else if (getActiveLedNum() < BUTTON_NUM) {
-    turnOnLed(sequence[getActiveLedNum()]);
-  } else {
+  if (!inputEnabled && !pressedButtons) inputEnabled = 1;
+  if (inputEnabled) {
+    if (millis() - entred_state_time > T3 || (pressedButtons != sequence[getActiveLedNum()] && pressedButtons != 0)) {
+      //TODO gameOver();
+      Serial.println("Gamer Over");  //print also the score
+      changeGameMode(START_READY);
+    } else if (pressedButtons != 0) {
+      inputEnabled = 0;
+      if (getActiveLedNum() < BUTTON_NUM) {
+        turnOnLed(sequence[getActiveLedNum()]);
+      }
+    }
+  }
+  if (getActiveLedNum() == BUTTON_NUM) {
     //TODO win
     Serial.println("WIN");
-    changeGameMode(WAIT_START_TIME);  //increase the score
-  }
+    changeGameMode(WAIT_START_TIME);
+  }  //increase the score
   interrupts();
 }
 
@@ -122,8 +160,8 @@ game_state getActiveGameMode() {
   return activeGameState;
 }
 
-void log(String s){
- #ifdef DEBUG
- Serial.println(s);
- #endif 
+void logger(String s) {
+#ifdef DEBUG
+  Serial.println(s);
+#endif
 }

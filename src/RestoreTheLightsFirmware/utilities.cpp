@@ -13,12 +13,14 @@ unsigned long T2 = T2_TIME_DEFAULT;
 unsigned long T3 = T3_TIME_DEFAULT;
 double F = 1;          //factor influencing T2 T3
 unsigned short L = 0;  //difficulty level
+unsigned short score = 0;
 volatile byte pressedButtons = 0;
 game_state activeGameState = START_READY;
 int sequence[BUTTON_NUM] = { 1, 2, 4, 8 };
 unsigned long timePressed[BUTTON_NUM];
 bool inputEnabled = 1;
 void updateButton(int i);
+
 #if BUTTON_NUM != 4
 #pragma GCC error "Modify the handler array accordigly to your number of buttons"
 #endif
@@ -28,6 +30,7 @@ void handler2(){updateButton(2);}
 void handler3(){updateButton(3);}
 
 void (*handler[BUTTON_NUM])(){handler0,handler1,handler2,handler3};
+
 // To update the pressed mask every time any button is pressed or released, might split for each button
 void updateButtons() {
   long time = millis();
@@ -75,10 +78,12 @@ void changeGameMode(game_state state) {
   switch (state) {
     case START_READY:
       logger("State Ready");
+      Serial.println("Welcome to the Restore the light Game. Press key B1 to Start");
       break;
 
     case WAIT_START_TIME:
       logger("Wait Start Time");
+      Serial.println("Go!");
       break;
 
     case DISPLAY_SEQUENCE:
@@ -94,15 +99,30 @@ void changeGameMode(game_state state) {
       logger("Deep Sleep");
       break;
   }
-  if (state == START_READY) Serial.println("Welcome to the Restore the light Game. Press key B1 to Start");
 }
 
+void gameOver() {
+  turnOffAllLeds();
+  Serial.print("Gamer Over. Final score: ");
+  Serial.println(score);
+  score = 0;
+  turnOnLS();
+  delay(1000); //inutile se gli interrupt sono abilitati
+  changeGameMode(START_READY);
+}
+
+void win() {
+  score += 10;
+  Serial.print("New point! Score");
+  Serial.println(score);
+  changeGameMode(WAIT_START_TIME);
+}
 
 
 void StartReady() {
   if (millis() - entred_state_time < 10000) {
     L = map(analogRead(pot), 0, 1023, 1, 4);
-    F = map(L, 1, 4, 1.1, 2.1);
+    F = map(L, 1, 4, 1.1, 1.6);
     breathLed();
   } else {
     changeGameMode(SLEEP);
@@ -116,7 +136,7 @@ void StartReady() {
 
 void deepSleep() {
   logger("Entering Deep Sleep");
-  turnOffBreather();
+  turnOffLS();
   set_sleep_mode(SLEEP_MODE_PWR_DOWN);
   sleep_enable();
   sleep_mode();
@@ -125,7 +145,7 @@ void deepSleep() {
 }
 
 void waitStartTime() {
-  turnOffBreather();
+  turnOffLS();
   if (T1 == 0) {
     T1 = random(MIN_WAIT_TIME, MAX_WAIT_TIME);
     generateSequence();
@@ -155,10 +175,7 @@ void userGameplay() {
   if (!inputEnabled && !pressedButtons) inputEnabled = 1;
   if (inputEnabled) { //need to release all buttons before registering a new one
     if (millis() - entred_state_time > T3 || (pressedButtons != sequence[getActiveLedNum()] && pressedButtons != 0)) { //In case of overtime or wrong button pressed
-      //TODO gameOver(); and score
-      turnOffAllLeds(); //TODO maybe blink? check specifications
-      Serial.println("Gamer Over");  //print also the score
-      changeGameMode(START_READY);
+      gameOver();
     } else if (pressedButtons != 0) {
       inputEnabled = 0;
       if (getActiveLedNum() < BUTTON_NUM) {
@@ -167,10 +184,8 @@ void userGameplay() {
     }
   }
   if (getActiveLedNum() == BUTTON_NUM) {
-    //TODO win
-    Serial.println("WIN");
-    changeGameMode(WAIT_START_TIME);
-  }  //increase the score
+    win();
+  }
   interrupts();
 }
 

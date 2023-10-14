@@ -11,7 +11,9 @@ void turnOnLed(int ledMask);    //Truns on led identified by mask 1 2 4 8 in rel
 
 void breathLed();               //If called continuosly, make a led breath
 
-void turnOffBreather();         //Switches off the breathing led
+void turnOffLS();         //Switches off the breathing led
+
+void turnOnLS();          //Switches on the red led
 
 void turnOffAllLeds();          //Turns off all the game leds
 

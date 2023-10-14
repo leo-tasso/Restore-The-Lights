@@ -11,13 +11,11 @@ unsigned long timeBright = 0;
 //Returns the number of leds currently on
 short int getActiveLedNum() {
   byte count = 0;
-
   for (int i = 0; i < 8; i++) {
     if (activeLeds & (1 << i)) {
       count++;
     }
   }
-
   return count;
 }
 
@@ -32,10 +30,10 @@ void turnOnAllLeds() {
 
 //Truns off led identified by mask 1 2 4 8 in relative order
 void turnOffLed(int ledMask) {
-  activeLeds = activeLeds ^ ledMask;  //error in case try to turn off a led already off
+  activeLeds = activeLeds ^ ledMask;
   for (int i = 0; i < BUTTON_NUM; i++) {
     if ((ledMask >> i) & 1) {
-      digitalWrite(pinL[i], LOW); //i+1 se cambio pinLin config.h
+      digitalWrite(pinL[i], LOW);
     }
   }
   logger("Turn off led");
@@ -53,6 +51,7 @@ void turnOnLed(int ledMask) {
   }
 }
 
+//Turn off all leds
 void turnOffAllLeds(){
   logger("All led Off");
   for (int i = 0; i < BUTTON_NUM; i++) {
@@ -61,7 +60,7 @@ void turnOffAllLeds(){
   activeLeds = 0b0000;
 }
 
-//if called continuosly, make a led breath
+//If called continuosly, make a led breath
 void breathLed() {
   analogWrite(LS, brightness);
   if(millis() > timeBright + BREATH_DELAY){
@@ -71,6 +70,12 @@ void breathLed() {
   if (brightness <= 1 || brightness >= 255) fadeAmount = -fadeAmount;
 }
 
-void turnOffBreather(){
+//Turn off red led (LS)
+void turnOffLS(){
   analogWrite(LS,LOW);
+}
+
+//Turn on red led (LS)
+void turnOnLS() {
+  analogWrite(LS,HIGH);
 }

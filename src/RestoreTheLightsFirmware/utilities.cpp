@@ -144,6 +144,7 @@ void deepSleep() {
   sleep_enable();
   sleep_mode();
   sleep_disable();
+  inputEnabled=false; //If woken a button has been pressed
   changeGameMode(START_READY);
 }
 

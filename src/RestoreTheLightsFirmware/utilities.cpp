@@ -11,6 +11,7 @@ unsigned long entred_state_time;
 unsigned long T1 = 0;
 unsigned long T2 = T2_TIME_DEFAULT;
 unsigned long T3 = T3_TIME_DEFAULT;
+unsigned long pressedB1 = 0;
 double F = 1;          //factor influencing T2 T3
 unsigned short L = 0;  //difficulty level
 unsigned short score = 0;
@@ -128,7 +129,7 @@ void StartReady() {
     changeGameMode(SLEEP);
   }
   noInterrupts();
-  if (pressedButtons == 1) {
+  if (pressedButtons == 1 && (millis() - pressedB1 > 1000)) {
     changeGameMode(WAIT_START_TIME);
   }
   interrupts();
@@ -175,6 +176,7 @@ void userGameplay() {
   if (!inputEnabled && !pressedButtons) inputEnabled = 1;
   if (inputEnabled) { //need to release all buttons before registering a new one
     if (millis() - entred_state_time > T3 || (pressedButtons != sequence[getActiveLedNum()] && pressedButtons != 0)) { //In case of overtime or wrong button pressed
+      pressedB1 = millis();
       gameOver();
     } else if (pressedButtons != 0) {
       inputEnabled = 0;

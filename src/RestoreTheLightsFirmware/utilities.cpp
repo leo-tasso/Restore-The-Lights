@@ -102,7 +102,7 @@ void changeGameMode(game_state state) {
 void StartReady() {
   if (millis() - entred_state_time < 10000) {
     L = map(analogRead(pot), 0, 1023, 1, 4);
-    F = map(L, 1, 4, 1.2, 2.2);
+    F = map(L, 1, 4, 1.1, 2.1);
     breathLed();
   } else {
     changeGameMode(SLEEP);
@@ -125,6 +125,7 @@ void deepSleep() {
 }
 
 void waitStartTime() {
+  turnOffBreather();
   if (T1 == 0) {
     T1 = random(MIN_WAIT_TIME, MAX_WAIT_TIME);
     generateSequence();

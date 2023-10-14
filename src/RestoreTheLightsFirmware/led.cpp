@@ -6,6 +6,7 @@
 short int brightness = 0;
 short int fadeAmount = 1;
 short int activeLeds = 0;  //store the info about the led on/off
+unsigned long timeBright = 0;
 
 //Returns the number of leds currently on
 short int getActiveLedNum() {
@@ -34,7 +35,7 @@ void turnOffLed(int ledMask) {
   activeLeds = activeLeds ^ ledMask;  //error in case try to turn off a led already off
   for (int i = 0; i < BUTTON_NUM; i++) {
     if ((ledMask >> i) & 1) {
-      digitalWrite(pinL[BUTTON_NUM - i - 1], LOW);
+      digitalWrite(pinL[i], LOW); //i+1 se cambio pinLin config.h
     }
   }
   logger("Turn off led");
@@ -48,20 +49,28 @@ void turnOnLed(int ledMask) {
   activeLeds = activeLeds | ledMask;
   for (int i = 0; i < BUTTON_NUM; i++) {
     if ((activeLeds >> i) & 1)
-      digitalWrite(pinL[BUTTON_NUM - i -1], HIGH);
+      digitalWrite(pinL[i], HIGH);
   }
+}
+
+void turnOffAllLeds(){
+  logger("All led Off");
+  for (int i = 0; i < BUTTON_NUM; i++) {
+    digitalWrite(pinL[i], LOW);
+  }
+  activeLeds = 0b0000;
 }
 
 //if called continuosly, make a led breath
 void breathLed() {
   analogWrite(LS, brightness);
-  brightness += fadeAmount;
-  if (brightness == 0 || brightness == 255) fadeAmount = -fadeAmount;
+  if(millis() > timeBright + BREATH_DELAY){
+    brightness += fadeAmount;
+    timeBright = millis();
+  }
+  if (brightness <= 1 || brightness >= 255) fadeAmount = -fadeAmount;
 }
 
-void turnOffAllLeds(){
-  //TODO
-}
 void turnOffBreather(){
-  //TODO
+  analogWrite(LS,LOW);
 }

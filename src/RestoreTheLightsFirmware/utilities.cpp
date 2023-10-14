@@ -11,7 +11,6 @@ unsigned long entred_state_time;
 unsigned long T1 = 0;
 unsigned long T2 = T2_TIME_DEFAULT;
 unsigned long T3 = T3_TIME_DEFAULT;
-unsigned long pressedB1 = 0;
 double F = 1;          //factor influencing T2 T3
 unsigned short L = 0;  //difficulty level
 unsigned short score = 0;
@@ -125,14 +124,17 @@ void StartReady() {
     L = map(analogRead(pot), 0, 1023, 1, 4);
     F = map(L, 1, 4, 1.1, 1.6);
     breathLed();
+    noInterrupts();
+    if (pressedButtons == 1 && inputEnabled) {
+      changeGameMode(WAIT_START_TIME);
+    }
+    else if(pressedButtons==0){
+      inputEnabled = 1;
+    }
+    interrupts();
   } else {
     changeGameMode(SLEEP);
   }
-  noInterrupts();
-  if (pressedButtons == 1 && (millis() - pressedB1 > 1000)) {
-    changeGameMode(WAIT_START_TIME);
-  }
-  interrupts();
 }
 
 void deepSleep() {
@@ -176,8 +178,8 @@ void userGameplay() {
   if (!inputEnabled && !pressedButtons) inputEnabled = 1;
   if (inputEnabled) { //need to release all buttons before registering a new one
     if (millis() - entred_state_time > T3 || (pressedButtons != sequence[getActiveLedNum()] && pressedButtons != 0)) { //In case of overtime or wrong button pressed
-      pressedB1 = millis();
       gameOver();
+      inputEnabled = !pressedButtons; // Set inputEnabled, if no pressed buttons, it's enabled
     } else if (pressedButtons != 0) {
       inputEnabled = 0;
       if (getActiveLedNum() < BUTTON_NUM) {

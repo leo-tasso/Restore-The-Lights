@@ -68,7 +68,6 @@ void breathLed() {
       fadeAmount = -fadeAmount;
     } 
     analogWrite(LS, brightness);
-    Serial.println(brightness);
     timeBright = millis();
   }
 }

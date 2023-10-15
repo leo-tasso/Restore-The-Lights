@@ -11,7 +11,7 @@
 #define T2_TIME_DEFAULT 3000
 #define T3_TIME_DEFAULT 5000
 #define BOUNCING_TIME 30 //ms
-#define BREATH_DELAY 2 //ms
+#define BREATH_DELAY 3 //ms
 #define INVERTED 1
 enum game_state { START_READY,
                   WAIT_START_TIME,

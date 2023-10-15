@@ -62,12 +62,15 @@ void turnOffAllLeds(){
 
 //If called continuosly, make a led breath
 void breathLed() {
-  analogWrite(LS, brightness);
   if(millis() > timeBright + BREATH_DELAY){
     brightness += fadeAmount;
+    if (brightness <= 0 || brightness >= 255) {
+      fadeAmount = -fadeAmount;
+    } 
+    analogWrite(LS, brightness);
+    Serial.println(brightness);
     timeBright = millis();
   }
-  if (brightness <= 1 || brightness >= 255) fadeAmount = -fadeAmount;
 }
 
 //Turn off red led (LS)

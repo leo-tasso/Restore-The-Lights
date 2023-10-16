@@ -107,6 +107,7 @@ void waitStartTime() {
   turnOffLS();
   if (T1 == 0) {
     T1 = random(MIN_WAIT_TIME, MAX_WAIT_TIME);
+    logger((String)T1+"T1");
     generateSequence();
     turnOffAllLeds();
   }
@@ -121,7 +122,7 @@ void waitStartTime() {
 
 void displaySequence() {
   if (getActiveLedNum() == 0) {
-    logger((String)T2);
+    logger((String)T2+"T2");
     logger((String)(getActiveLedNum()));
     changeGameMode(USER_GAMEPLAY);
   } else if (millis() - entred_state_time > T2 / BUTTON_NUM) {
@@ -134,7 +135,7 @@ void userGameplay() {
   noInterrupts();
   if (!inputEnabled && !pressedButtons()) inputEnabled = 1;
   if (inputEnabled) { //need to release all buttons before registering a new one
-    if (millis() - entred_state_time > T3 || (pressedButtons() != sequence[getActiveLedNum()] && pressedButtons != 0)) { //In case of overtime or wrong button pressed
+    if (millis() - entred_state_time > T3 || (pressedButtons() != sequence[getActiveLedNum()] && pressedButtons() != 0)) { //In case of overtime or wrong button pressed
       gameOver();
       inputEnabled = !pressedButtons(); // Set inputEnabled, if no pressed buttons, it's enabled
     } else if (pressedButtons() != 0) {

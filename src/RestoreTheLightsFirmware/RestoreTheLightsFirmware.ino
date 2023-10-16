@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "config.h"
 #include "utilities.h"
-
+#include "buttons.h"
 
 void setup() {
   randomSeed(analogRead(0));  //seed of rand function

@@ -2,10 +2,10 @@
 #include <avr/sleep.h>
 #include <stdlib.h>
 #include <arduino.h>
-#include <EnableInterrupt.h>
 #include "utilities.h"
 #include "config.h"
 #include "led.h"
+#include "buttons.h"
 
 unsigned long entred_state_time;
 unsigned long T1 = 0;
@@ -14,54 +14,9 @@ unsigned long T3 = T3_TIME_DEFAULT;
 double F = 1;          //factor influencing T2 T3
 unsigned short L = 0;  //difficulty level
 unsigned short score = 0;
-volatile byte pressedButtons = 0;
 game_state activeGameState = START_READY;
 int sequence[BUTTON_NUM] = { 1, 2, 4, 8 };
-unsigned long timePressed[BUTTON_NUM];
 bool inputEnabled = 1;
-void updateButton(int i);
-
-#if BUTTON_NUM != 4
-#pragma GCC error "Modify the handler array accordigly to your number of buttons"
-#endif
-void handler0(){updateButton(0);}
-void handler1(){updateButton(1);}
-void handler2(){updateButton(2);}
-void handler3(){updateButton(3);}
-
-void (*handler[BUTTON_NUM])(){handler0,handler1,handler2,handler3};
-
-// To update the pressed mask every time any button is pressed or released, might split for each button
-void updateButtons() {
-  long time = millis();
-  for (int i = 0; i < BUTTON_NUM; i++) {
-  updateButton(i);
-  }
-  //logger((String)pressedButtons);
-}
-
-void updateButton(int i){
-  long time = millis();
-    if (time - timePressed[i] > BOUNCING_TIME) {
-      timePressed[i] = time;
-      int status = digitalRead(pinB[i]);
-      if ((status ^ INVERTED) == HIGH) {
-        //logger("Pressed");
-        pressedButtons |= (0b1 << i);
-      } else {
-        pressedButtons &= ~(0b1 << i);
-      }
-    }
-  //logger((String)pressedButtons);
-}
-
-void initializeInterrupts() {
-  logger("Inizialized Interrupts");
-  for (int i = 0; i < BUTTON_NUM; i++) {
-    timePressed[i] = 0;
-    enableInterrupt(pinB[i], handler[i], CHANGE);
-  }
-}
 
 void generateSequence() {
   for (int i = BUTTON_NUM - 1; i > 0; i--) {
@@ -125,10 +80,10 @@ void StartReady() {
     F = map(L, 1, 4, 1.1, 1.6);
     breathLed();
     noInterrupts();
-    if (pressedButtons == 1 && inputEnabled) {
+    if (pressedButtons() == 1 && inputEnabled) {
       changeGameMode(WAIT_START_TIME);
     }
-    else if(pressedButtons==0){
+    else if(pressedButtons()==0){
       inputEnabled = 1;
     }
     interrupts();
@@ -176,12 +131,12 @@ void displaySequence() {
 
 void userGameplay() {
   noInterrupts();
-  if (!inputEnabled && !pressedButtons) inputEnabled = 1;
+  if (!inputEnabled && !pressedButtons()) inputEnabled = 1;
   if (inputEnabled) { //need to release all buttons before registering a new one
-    if (millis() - entred_state_time > T3 || (pressedButtons != sequence[getActiveLedNum()] && pressedButtons != 0)) { //In case of overtime or wrong button pressed
+    if (millis() - entred_state_time > T3 || (pressedButtons() != sequence[getActiveLedNum()] && pressedButtons != 0)) { //In case of overtime or wrong button pressed
       gameOver();
-      inputEnabled = !pressedButtons; // Set inputEnabled, if no pressed buttons, it's enabled
-    } else if (pressedButtons != 0) {
+      inputEnabled = !pressedButtons(); // Set inputEnabled, if no pressed buttons, it's enabled
+    } else if (pressedButtons() != 0) {
       inputEnabled = 0;
       if (getActiveLedNum() < BUTTON_NUM) {
         turnOnLed(sequence[getActiveLedNum()]);

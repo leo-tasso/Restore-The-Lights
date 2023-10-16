@@ -108,10 +108,11 @@ void waitStartTime() {
   if (T1 == 0) {
     T1 = random(MIN_WAIT_TIME, MAX_WAIT_TIME);
     generateSequence();
-    turnOnAllLeds();
+    turnOffAllLeds();
   }
   if (millis() - entred_state_time >= T1) {
     T1 = 0;
+    turnOnAllLeds();
     changeGameMode(DISPLAY_SEQUENCE);
     T2 = T2 / F;
     T3 = T3 / F;

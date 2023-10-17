@@ -79,14 +79,13 @@ void StartReady() {
     L = map(analogRead(pot), 0, 1023, 1, 4);
     F = map(L, 1, 4, 1.1, 1.6);
     breathLed();
-    noInterrupts();
-    if (pressedButtons() == 1 && inputEnabled) {
+    byte momentaryPressedButtons = pressedButtons();
+    if (momentaryPressedButtons == 1 && inputEnabled) {
       changeGameMode(WAIT_START_TIME);
     }
-    else if(pressedButtons()==0){
+    else if(momentaryPressedButtons ==0){
       inputEnabled = 1;
     }
-    interrupts();
   } else {
     changeGameMode(SLEEP);
   }
@@ -132,13 +131,14 @@ void displaySequence() {
 }
 
 void userGameplay() {
-  noInterrupts();
-  if (!inputEnabled && !pressedButtons()) inputEnabled = 1;
+  byte momentaryPressedButtons = pressedButtons();
+  if (!inputEnabled && !momentaryPressedButtons) inputEnabled = 1;
   if (inputEnabled) { //need to release all buttons before registering a new one
-    if (millis() - entred_state_time > T3 || (pressedButtons() != sequence[getActiveLedNum()] && pressedButtons() != 0)) { //In case of overtime or wrong button pressed
+    //In case of overtime or wrong button pressed
+    if (millis() - entred_state_time > T3 || (momentaryPressedButtons != sequence[getActiveLedNum()] && momentaryPressedButtons != 0)) { 
       gameOver();
-      inputEnabled = !pressedButtons(); // Set inputEnabled, if no pressed buttons, it's enabled
-    } else if (pressedButtons() != 0) {
+      inputEnabled = !momentaryPressedButtons; // Set inputEnabled, if no pressed buttons, it's enabled
+    } else if (momentaryPressedButtons != 0) {
       inputEnabled = 0;
       if (getActiveLedNum() < BUTTON_NUM) {
         turnOnLed(sequence[getActiveLedNum()]);
@@ -148,7 +148,6 @@ void userGameplay() {
   if (getActiveLedNum() == BUTTON_NUM) {
     win();
   }
-  interrupts();
 }
 
 game_state getActiveGameMode() {

@@ -50,6 +50,9 @@ void changeGameMode(game_state state) {
       logger((String)sequence[0] + (String)sequence[1] + (String)sequence[2] + (String)sequence[3]);
       break;
 
+    case LOST:
+      logger("Lost");
+
     case SLEEP:
       logger("Deep Sleep");
       break;
@@ -62,8 +65,7 @@ void gameOver() {
   Serial.println(score);
   score = 0;
   turnOnLS();
-  delay(1000); //inutile se gli interrupt sono abilitati
-  changeGameMode(START_READY);
+  changeGameMode(LOST);
 }
 
 void win() {
@@ -76,7 +78,7 @@ void win() {
 
 void StartReady() {
   if (millis() - entred_state_time < 10000) {
-    L = map(analogRead(pot), 0, 1023, 1, 4);
+    L = map(analogRead(pot), 0, 1024, 1, 5);
     F = map(L, 1, 4, 1.1, 1.6);
     breathLed();
     byte momentaryPressedButtons = pressedButtons();
@@ -148,6 +150,12 @@ void userGameplay() {
   if (getActiveLedNum() == BUTTON_NUM) {
     win();
   }
+}
+
+void lost(){
+  turnOnLS();
+  if (millis() - entred_state_time >= 1000)
+    changeGameMode(START_READY);
 }
 
 game_state getActiveGameMode() {

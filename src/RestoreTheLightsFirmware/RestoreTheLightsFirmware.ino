@@ -36,6 +36,10 @@ void loop() {
       userGameplay();
       break;
 
+    case LOST:
+      lost();
+      break;
+
     case SLEEP:
       deepSleep();
       break;

@@ -8,6 +8,16 @@ short int fadeAmount = 1;
 short int activeLeds = 0;  //store the info about the led on/off
 unsigned long timeBright = 0;
 
+void updateLed() {
+  for (int i = 0; i < BUTTON_NUM; i++) {
+    if ((~activeLeds >> i) & 1) {
+      digitalWrite(pinL[i], LOW);
+    }
+    if ((activeLeds >> i) & 1)
+      digitalWrite(pinL[i], HIGH);
+  }
+}
+
 //Returns the number of leds currently on
 short int getActiveLedNum() {
   byte count = 0;
@@ -22,20 +32,14 @@ short int getActiveLedNum() {
 //Turns on all leds
 void turnOnAllLeds() {
   logger("All led On");
-  for (int i = 0; i < BUTTON_NUM; i++) {
-    digitalWrite(pinL[i], HIGH);
-  }
   activeLeds = 0b1111;
+  updateLed();
 }
 
 //Truns off led identified by mask 1 2 4 8 in relative order
 void turnOffLed(int ledMask) {
   activeLeds = activeLeds ^ ledMask;
-  for (int i = 0; i < BUTTON_NUM; i++) {
-    if ((ledMask >> i) & 1) {
-      digitalWrite(pinL[i], LOW);
-    }
-  }
+  updateLed();
   logger("Turn off led");
   logger((String)activeLeds);
   logger((String)getActiveLedNum());
@@ -45,19 +49,14 @@ void turnOffLed(int ledMask) {
 void turnOnLed(int ledMask) {
   logger("Turn On led");
   activeLeds = activeLeds | ledMask;
-  for (int i = 0; i < BUTTON_NUM; i++) {
-    if ((activeLeds >> i) & 1)
-      digitalWrite(pinL[i], HIGH);
-  }
+  updateLed();
 }
 
 //Turn off all leds
 void turnOffAllLeds(){
   logger("All led Off");
-  for (int i = 0; i < BUTTON_NUM; i++) {
-    digitalWrite(pinL[i], LOW);
-  }
   activeLeds = 0b0000;
+  updateLed();
 }
 
 //If called continuosly, make a led breath
@@ -74,10 +73,12 @@ void breathLed() {
 
 //Turn off red led (LS)
 void turnOffLS(){
-  analogWrite(LS,LOW);
+  digitalWrite(LS,LOW);
+  brightness = 1;
 }
 
 //Turn on red led (LS)
 void turnOnLS() {
-  analogWrite(LS,HIGH);
+  digitalWrite(LS,HIGH);
+  brightness = 254;
 }

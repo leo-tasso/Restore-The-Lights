@@ -1,17 +1,16 @@
 #ifndef CONFIG
 #define CONFIG
 
-#define DEBUG
-
 #define pot A0                  //Pin of potentiometer
 #define LS 11                   //Pin of status LED, must be PWM pin
 #define BUTTON_NUM 4            //The number of pairs led-button (MAX 8)
-#define MAX_WAIT_TIME 5000
+#define MAX_WAIT_TIME 3000
 #define MIN_WAIT_TIME 100
 #define T2_TIME_DEFAULT 3000
 #define T3_TIME_DEFAULT 5000
 #define BOUNCING_TIME 30 //ms
 #define BREATH_DELAY 3 //ms
+#define BLINK_TIME 100 //ms
 #define INVERTED 1
 enum game_state { START_READY,
                   WAIT_START_TIME,

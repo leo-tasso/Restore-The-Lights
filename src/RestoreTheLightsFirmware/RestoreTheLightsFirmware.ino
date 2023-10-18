@@ -40,6 +40,10 @@ void loop() {
       lost();
       break;
 
+    case VICTORY_COOLDOWN:
+      victoryCooldown();
+      break;
+
     case SLEEP:
       deepSleep();
       break;

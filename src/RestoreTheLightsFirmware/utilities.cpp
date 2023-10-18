@@ -153,10 +153,10 @@ void userGameplay() {
 }
 
 void lost(){
-  turnOnLS();
-  if (millis() - entred_state_time >= 1000)
+  if (millis() - entred_state_time >= 2000)
     changeGameMode(START_READY);
 }
+
 void victoryCooldown() {
   if (millis() - entred_state_time >= (3*BLINK_TIME))
     changeGameMode(WAIT_START_TIME);

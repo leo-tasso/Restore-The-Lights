@@ -53,7 +53,7 @@ void turnOnLed(int ledMask) {
 }
 
 //Turn off all leds
-void turnOffAllLeds(){
+void turnOffAllLeds() {
   logger("All led Off");
   activeLeds = 0b0000;
   updateLed();
@@ -61,24 +61,24 @@ void turnOffAllLeds(){
 
 //If called continuosly, make a led breath
 void breathLed() {
-  if(millis() > timeBright + BREATH_DELAY){
+  if (millis() > timeBright + BREATH_DELAY) {
     brightness += fadeAmount;
     if (brightness <= 0 || brightness >= 255) {
       fadeAmount = -fadeAmount;
-    } 
+    }
     analogWrite(LS, brightness);
     timeBright = millis();
   }
 }
 
 //Turn off red led (LS)
-void turnOffLS(){
-  digitalWrite(LS,LOW);
+void turnOffLS() {
+  digitalWrite(LS, LOW);
   brightness = 1;
 }
 
 //Turn on red led (LS)
 void turnOnLS() {
-  digitalWrite(LS,HIGH);
+  digitalWrite(LS, HIGH);
   brightness = 254;
 }

@@ -2,6 +2,7 @@
 #include "config.h"
 #include "utilities.h"
 #include "buttons.h"
+#include "states.h"
 
 void setup() {
   randomSeed(analogRead(0));  //seed of rand function
@@ -18,7 +19,7 @@ void setup() {
 }
 
 void loop() {
-  updateButtons(); //check also every cycle for button pressed in case of false positive
+  updateButtons();  //check also every cycle for button pressed in case of false positive
   switch (getActiveGameMode()) {
     case START_READY:
       StartReady();

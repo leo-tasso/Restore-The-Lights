@@ -15,6 +15,8 @@ void userGameplay();
 
 void lost();
 
+void victoryCooldown();
+
 game_state getActiveGameMode();
 
 void changeGameMode(game_state state);

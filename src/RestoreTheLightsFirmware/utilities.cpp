@@ -72,7 +72,7 @@ void win() {
   score += 10;
   Serial.print("New point! Score");
   Serial.println(score);
-  changeGameMode(WAIT_START_TIME);
+  changeGameMode(VICTORY_COOLDOWN);
 }
 
 
@@ -156,6 +156,15 @@ void lost(){
   turnOnLS();
   if (millis() - entred_state_time >= 1000)
     changeGameMode(START_READY);
+}
+void victoryCooldown() {
+  if (millis() - entred_state_time >= (3*BLINK_TIME))
+    changeGameMode(WAIT_START_TIME);
+  else if (millis() - entred_state_time >= (2*BLINK_TIME))
+    turnOnAllLeds();
+  else if (millis() - entred_state_time >= BLINK_TIME)
+    turnOffAllLeds();
+
 }
 
 game_state getActiveGameMode() {

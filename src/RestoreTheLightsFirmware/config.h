@@ -18,6 +18,7 @@ enum game_state { START_READY,
                   DISPLAY_SEQUENCE,
                   USER_GAMEPLAY,
                   LOST,
+                  VICTORY_COOLDOWN,
                   SLEEP };
 const unsigned short pinL[BUTTON_NUM] = { 6,7,8,9 };
 const unsigned short pinB[BUTTON_NUM] = { 2,3,4,5 };

@@ -9,7 +9,7 @@ unsigned short score = 0;
 
 void logger(String s) {
 #ifdef DEBUG
-  Serial.println(s);
+  Serial.println("log:" + s);
 #endif
 }
 

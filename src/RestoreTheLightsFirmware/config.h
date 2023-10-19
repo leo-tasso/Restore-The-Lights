@@ -1,6 +1,8 @@
 #ifndef CONFIG
 #define CONFIG
 
+#define DEBUG
+
 #define pot A0        //Pin of potentiometer
 #define LS 11         //Pin of status LED, must be PWM pin
 #define BUTTON_NUM 4  //The number of pairs led-button (MAX 8)

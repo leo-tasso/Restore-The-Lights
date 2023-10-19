@@ -39,20 +39,26 @@ void changeGameMode(game_state state) {
 
     case LOST:
       logger("Lost");
+      break;
 
     case SLEEP:
       logger("Deep Sleep");
+      break;
+    default:
       break;
   }
 }
 
 void StartReady() {
   if (millis() - entred_state_time < 10000) {
-    L = map(analogRead(pot), 0, 1024, 1, 5);
-    F = map(L, 1, 4, 1.1, 1.6);
     breathLed();
     byte momentaryPressedButtons = pressedButtons();
     if (momentaryPressedButtons == 1 && inputEnabled) {
+      L = map(analogRead(pot), 0, 1024, 1, 5);
+      F = map(L, 1, 4, 101, 140)/100.0;
+      logger("L:"+(String)L+" F:"+(String)F);
+      T2 = T2_TIME_DEFAULT;
+      T3 = T3_TIME_DEFAULT;
       changeGameMode(WAIT_START_TIME);
     } else if (momentaryPressedButtons == 0) {
       inputEnabled = 1;
@@ -87,6 +93,7 @@ void waitStartTime() {
     changeGameMode(DISPLAY_SEQUENCE);
     T2 = T2 / F;
     T3 = T3 / F;
+    logger((String)T2 + (String)T3);
   }
 }
 

@@ -1,4 +1,3 @@
-#include "WString.h"
 #include "config.h"
 #include <Arduino.h>
 #include "utilities.h"

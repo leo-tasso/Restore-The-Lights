@@ -27,12 +27,10 @@ void (*handler[BUTTON_NUM])(){ handler0, handler1, handler2, handler3 };
 // To update the pressed mask every time any button is pressed or released, might split for each button
 void updateButtons() {
   noInterrupts();
-  long time = millis();
   for (int i = 0; i < BUTTON_NUM; i++) {
     updateButton(i);
   }
   interrupts();
-  //logger((String)pressedButtonsBuffer);
 }
 
 void updateButton(int i) {

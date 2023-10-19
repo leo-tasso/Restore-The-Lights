@@ -24,14 +24,14 @@ void generateSequence(int* sequence) {
 
 void gameOver() {
   turnOffAllLeds();
-  Serial.print("Gamer Over. Final score: " + String(score));
+  Serial.println("Gamer Over. Final score: " + String(score));
   score = 0;
   turnOnLS();
   changeGameMode(LOST);
 }
 
-void win() {
-  score += 10;
-  Serial.print("New point! Score" + String(score));
+void win(int pointIncrease) {
+  score += pointIncrease;
+  Serial.println("New point! Score " + String(score));
   changeGameMode(VICTORY_COOLDOWN);
 }

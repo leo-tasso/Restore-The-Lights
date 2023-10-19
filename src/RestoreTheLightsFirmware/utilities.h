@@ -11,7 +11,7 @@ void updateButtons();
 
 void generateSequence(int* sequence);
 
-void win();
+void win(int pointIncrease);
 
 void gameOver();
 

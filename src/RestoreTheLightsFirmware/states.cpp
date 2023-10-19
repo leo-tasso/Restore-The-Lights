@@ -52,11 +52,12 @@ void changeGameMode(game_state state) {
 void StartReady() {
   if (millis() - entred_state_time < 10000) {
     breathLed();
+    logger((String)inputEnabled);
     byte momentaryPressedButtons = pressedButtons();
     if (momentaryPressedButtons == 1 && inputEnabled) {
       L = map(analogRead(pot), 0, 1024, 1, 5);
-      F = map(L, 1, 4, 101, 140)/100.0;
-      logger("L:"+(String)L+" F:"+(String)F);
+      F = map(L, 1, 4, 101, 140) / 100.0;
+      logger("L:" + (String)L + " F:" + (String)F);
       T2 = T2_TIME_DEFAULT;
       T3 = T3_TIME_DEFAULT;
       changeGameMode(WAIT_START_TIME);
@@ -69,13 +70,14 @@ void StartReady() {
 }
 
 void deepSleep() {
+  inputEnabled = 0;  //If woken a button has been pressed
   logger("Entering Deep Sleep");
   turnOffLS();
+  delay(50); //Delay to allow actions before sleep
   set_sleep_mode(SLEEP_MODE_PWR_DOWN);
   sleep_enable();
   sleep_mode();
   sleep_disable();
-  inputEnabled = false;  //If woken a button has been pressed
   changeGameMode(START_READY);
 }
 
@@ -124,7 +126,7 @@ void userGameplay() {
     }
   }
   if (getActiveLedNum() == BUTTON_NUM) {
-    win();
+    win(T2_TIME_DEFAULT-T2);
   }
 }
 

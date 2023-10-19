@@ -1,7 +1,7 @@
 #ifndef CONFIG
 #define CONFIG
 
-#define DEBUG
+//#define DEBUG
 
 #define pot A0        //Pin of potentiometer
 #define LS 11         //Pin of status LED, must be PWM pin

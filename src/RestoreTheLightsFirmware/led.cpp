@@ -9,11 +9,12 @@ unsigned long timeBright = 0;
 
 void updateLed() {
   for (int i = 0; i < BUTTON_NUM; i++) {
-    if ((~activeLeds >> i) & 1) {
+
+    if ((activeLeds >> i) & 1) {
+      digitalWrite(pinL[i], HIGH);
+    } else {
       digitalWrite(pinL[i], LOW);
     }
-    if ((activeLeds >> i) & 1)
-      digitalWrite(pinL[i], HIGH);
   }
 }
 

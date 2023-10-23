@@ -1,3 +1,9 @@
+/*
+ * ASSIGNMENT #1 - RESTORE THE LIGHT  
+ * 
+ * Authors: L. Tassinari, M. Oliveri
+ * 
+ */
 #ifndef UTILITIES
 #define UTILITIES
 

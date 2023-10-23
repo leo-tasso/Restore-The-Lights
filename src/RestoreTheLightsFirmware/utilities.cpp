@@ -1,3 +1,9 @@
+/*
+ * ASSIGNMENT #1 - RESTORE THE LIGHT  
+ * 
+ * Authors: L. Tassinari, M. Oliveri
+ * 
+ */
 #include <arduino.h>
 #include "utilities.h"
 #include "config.h"

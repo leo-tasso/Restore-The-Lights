@@ -1,3 +1,9 @@
+/*
+ * ASSIGNMENT #1 - RESTORE THE LIGHT  
+ * 
+ * Authors: L. Tassinari, M. Oliveri
+ * 
+ */
 #include <avr/sleep.h>
 #include <arduino.h>
 #include "config.h"

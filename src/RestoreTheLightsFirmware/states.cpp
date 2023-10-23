@@ -73,7 +73,7 @@ void deepSleep() {
   inputEnabled = 0;  //If woken a button has been pressed
   logger("Entering Deep Sleep");
   turnOffLS();
-  delay(50); //Delay to allow actions before sleep
+  delay(50);  //Delay to allow actions before sleep
   set_sleep_mode(SLEEP_MODE_PWR_DOWN);
   sleep_enable();
   sleep_mode();
@@ -113,20 +113,18 @@ void displaySequence() {
 void userGameplay() {
   byte momentaryPressedButtons = pressedButtons();
   if (!inputEnabled && !momentaryPressedButtons) inputEnabled = 1;
-  if (inputEnabled) {  //need to release all buttons before registering a new one
+  if (inputEnabled && momentaryPressedButtons != 0) {  //need to release all buttons before registering a new one
     //In case of overtime or wrong button pressed
-    if (millis() - entred_state_time > T3 || (momentaryPressedButtons != sequence[getActiveLedNum()] && momentaryPressedButtons != 0)) {
+    if (millis() - entred_state_time > T3 || (momentaryPressedButtons != sequence[getActiveLedNum()])) {
       gameOver();
       inputEnabled = !momentaryPressedButtons;  // Set inputEnabled, if no pressed buttons, it's enabled
-    } else if (momentaryPressedButtons != 0) {
-      inputEnabled = 0;
-      if (getActiveLedNum() < BUTTON_NUM) {
-        turnOnLed(sequence[getActiveLedNum()]);
-      }
+    } else if (getActiveLedNum() < BUTTON_NUM) {
+      turnOnLed(sequence[getActiveLedNum()]);
     }
+    inputEnabled = 0;
   }
   if (getActiveLedNum() == BUTTON_NUM) {
-    win(T2_TIME_DEFAULT-T2);
+    win(T2_TIME_DEFAULT - T2);
   }
 }
 
